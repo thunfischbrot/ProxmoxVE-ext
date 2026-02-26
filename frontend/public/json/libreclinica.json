@@ -1,0 +1,52 @@
+{
+  "name": "LibreClinica",
+  "slug": "libreclinica",
+  "categories": [
+    0
+  ],
+  "date_created": "2026-02-27",
+  "type": "ct",
+  "updateable": true,
+  "privileged": false,
+  "interface_port": 8080,
+  "documentation": "https://libreclinica.org/documentation.html",
+  "website": "https://libreclinica.org",
+  "logo": "https://cdn.jsdelivr.net/gh/selfhst/icons@main/webp/libreclinica.webp",
+  "config_path": "/opt/tomcat9/libreclinica.config/datainfo.properties",
+  "description": "LibreClinica is a community-driven, open-source Electronic Data Capture (EDC) and Clinical Data Management (CDM) system for clinical research and trials, forked from OpenClinica.",
+  "install_methods": [
+    {
+      "type": "default",
+      "script": "ct/libreclinica.sh",
+      "resources": {
+        "cpu": 2,
+        "ram": 2048,
+        "hdd": 10,
+        "os": "Debian",
+        "version": "13"
+      }
+    }
+  ],
+  "default_credentials": {
+    "username": "root",
+    "password": "12345678"
+  },
+  "notes": [
+    {
+      "text": "Change the default password (root / 12345678) immediately after first login!",
+      "type": "warning"
+    },
+    {
+      "text": "Tomcat takes 60–90 seconds to deploy on first start. Database credentials are saved in ~/libreclinica.creds.",
+      "type": "info"
+    },
+    {
+      "text": "Configure SMTP settings in /opt/tomcat9/libreclinica.config/datainfo.properties before inviting users.",
+      "type": "info"
+    },
+    {
+      "text": "For production use, place behind an HTTPS reverse proxy (e.g. Nginx or Caddy).",
+      "type": "warning"
+    }
+  ]
+}
