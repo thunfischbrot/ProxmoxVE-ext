@@ -17,15 +17,15 @@ update_os
 # DEPENDENCIES
 # ============================================================================
 msg_info "Installing Dependencies"
-$STD apt install -y postgresql-client python3
+$STD apt install -y python3
 msg_ok "Installed Dependencies"
 
 # ============================================================================
-# JAVA 11 + POSTGRESQL 16
+# JAVA 11 + POSTGRESQL 17
 # ============================================================================
 JAVA_VERSION="11" setup_java
 
-PG_VERSION="16" setup_postgresql
+PG_VERSION="17" setup_postgresql
 PG_DB_NAME="libreclinica" PG_DB_USER="clinica" setup_postgresql_db
 
 get_lxc_ip
