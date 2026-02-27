@@ -139,6 +139,16 @@ ldap.userData.firstName=givenName
 ldap.userData.lastName=sn
 ldap.userData.email=mail
 ldap.userData.organization=company
+
+syslogPort=514
+
+# Default values — overridden from the 'configuration' table by SQLInitServlet at startup.
+# Having them here ensures the app starts correctly even if the DB override hasn't run yet.
+passwd_expiration_time=360
+change_passwd_required=1
+
+# Prevents a non-fatal NPE in CoreResources.setRuleDesignerProps() at startup.
+designerURL=
 EOF
 
 chown tomcat:tomcat /opt/tomcat9/libreclinica.config/datainfo.properties
