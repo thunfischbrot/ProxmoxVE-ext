@@ -17,15 +17,15 @@ update_os
 # DEPENDENCIES
 # ============================================================================
 msg_info "Installing Dependencies"
-$STD apt install -y postgresql-client
+$STD apt install -y postgresql-client python3
 msg_ok "Installed Dependencies"
 
 # ============================================================================
-# JAVA 11 + POSTGRESQL 14
+# JAVA 11 + POSTGRESQL 16
 # ============================================================================
 JAVA_VERSION="11" setup_java
 
-PG_VERSION="14" setup_postgresql
+PG_VERSION="16" setup_postgresql
 PG_DB_NAME="libreclinica" PG_DB_USER="clinica" setup_postgresql_db
 
 get_lxc_ip
@@ -51,6 +51,30 @@ chmod -R 750 /opt/tomcat9
 # Tomcat needs write access to temp and work dirs
 chmod 770 /opt/tomcat9/temp /opt/tomcat9/work /opt/tomcat9/logs /opt/tomcat9/webapps
 msg_ok "Installed Apache Tomcat 9 ${TC9_VER}"
+
+msg_info "Hardening Tomcat configuration"
+python3 - <<'PYEOF'
+import re
+
+f = '/opt/tomcat9/conf/server.xml'
+c = open(f).read()
+
+# Disable TCP shutdown port (prevents unauthenticated local shutdown)
+c = re.sub(r'port="8005"(\s+shutdown=)', r'port="-1"\1', c)
+
+# Remove any uncommented AJP connector (defence-in-depth; already commented in Tomcat 9.0.37+)
+c = re.sub(r'\n\s*<Connector[^>]*AJP/1\.3[^>]*/>', '', c, flags=re.DOTALL)
+
+# Cap HTTP upload size at 100 MB (prevents upload-based DoS)
+c = re.sub(
+    r'(<Connector port="8080"[^/]*?)(/>)',
+    r'\g<1>maxPostSize="104857600" \2',
+    c, flags=re.DOTALL
+)
+
+open(f, 'w').write(c)
+PYEOF
+msg_ok "Hardened Tomcat configuration"
 
 # ============================================================================
 # LIBRECLINICA DIRECTORIES + CONFIGURATION
