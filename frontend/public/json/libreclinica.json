@@ -11,7 +11,7 @@
   "interface_port": 8080,
   "documentation": "https://libreclinica.org/documentation.html",
   "website": "https://libreclinica.org",
-  "logo": "https://cdn.jsdelivr.net/gh/selfhst/icons@main/webp/libreclinica.webp",
+  "logo": "https://raw.githubusercontent.com/reliatec-gmbh/LibreClinica/master/web/src/main/webapp/images/logo.png",
   "config_path": "/opt/tomcat9/libreclinica.config/datainfo.properties",
   "description": "LibreClinica is a community-driven, open-source Electronic Data Capture (EDC) and Clinical Data Management (CDM) system for clinical research and trials, forked from OpenClinica.",
   "install_methods": [

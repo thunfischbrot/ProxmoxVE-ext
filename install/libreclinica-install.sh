@@ -36,12 +36,13 @@ get_lxc_ip
 msg_info "Installing Apache Tomcat 9"
 LATEST_TC9=$(curl -fsSL "https://dlcdn.apache.org/tomcat/tomcat-9/" |
   grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+/' | sort -V | tail -n1 | tr -d '/')
+[[ -z "$LATEST_TC9" ]] && { msg_error "Failed to determine Tomcat 9 latest version"; exit 1; }
 TC9_VER="${LATEST_TC9#v}"
 TC9_URL="https://dlcdn.apache.org/tomcat/tomcat-9/${LATEST_TC9}/bin/apache-tomcat-${TC9_VER}.tar.gz"
 curl -fsSL "$TC9_URL" -o /tmp/tomcat9.tar.gz
 $STD adduser --system --group --no-create-home --shell /usr/sbin/nologin tomcat
 mkdir -p /opt/tomcat9
-tar --strip-components=1 -xzf /tmp/tomcat9.tar.gz -C /opt/tomcat9
+$STD tar --strip-components=1 -xzf /tmp/tomcat9.tar.gz -C /opt/tomcat9
 rm -f /tmp/tomcat9.tar.gz
 # Remove default webapps (ROOT, examples, docs, host-manager, manager)
 rm -rf /opt/tomcat9/webapps/*
@@ -112,7 +113,9 @@ msg_info "Downloading LibreClinica"
 USE_ORIGINAL_FILENAME=true fetch_and_deploy_gh_release \
   "libreclinica" "reliatec-gmbh/LibreClinica" \
   "singlefile" "latest" "/tmp/lc_download" "LibreClinica-web-*.war"
-cp /tmp/lc_download/LibreClinica-web-*.war /opt/tomcat9/webapps/libreclinica.war
+WAR_FILE=$(find /tmp/lc_download -maxdepth 1 -name "LibreClinica-web-*.war" | head -1)
+[[ -z "$WAR_FILE" ]] && { msg_error "WAR file not found"; exit 1; }
+cp "$WAR_FILE" /opt/tomcat9/webapps/libreclinica.war
 chown tomcat:tomcat /opt/tomcat9/webapps/libreclinica.war
 chmod 640 /opt/tomcat9/webapps/libreclinica.war
 rm -rf /tmp/lc_download
@@ -122,7 +125,8 @@ msg_ok "Downloaded and deployed LibreClinica"
 # SYSTEMD SERVICE
 # ============================================================================
 msg_info "Creating Service"
-JAVA_HOME_PATH=$(readlink -f /usr/lib/jvm/temurin-11-jdk-amd64)
+JAVA_HOME_PATH=$(find /usr/lib/jvm -maxdepth 1 -name "temurin-11-jdk-*" -type d | head -1)
+[[ -z "$JAVA_HOME_PATH" ]] && { msg_error "Temurin JDK 11 not found in /usr/lib/jvm"; exit 1; }
 cat <<EOF >/etc/systemd/system/libreclinica.service
 [Unit]
 Description=LibreClinica EDC (Apache Tomcat 9)

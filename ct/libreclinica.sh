@@ -44,8 +44,9 @@ function update_script() {
     msg_ok "Stopped ${APP}"
 
     msg_info "Backing up database"
-    pg_dump -U clinica libreclinica >"/root/libreclinica-db-backup-$(date +%F).sql"
-    msg_ok "Backed up database to /root/libreclinica-db-backup-$(date +%F).sql"
+    BACKUP_DATE=$(date +%F)
+    $STD sudo -u postgres pg_dump libreclinica >"/root/libreclinica-db-backup-${BACKUP_DATE}.sql"
+    msg_ok "Backed up database to /root/libreclinica-db-backup-${BACKUP_DATE}.sql"
 
     msg_info "Removing old deployment"
     rm -f /opt/tomcat9/webapps/libreclinica.war
@@ -59,7 +60,9 @@ function update_script() {
     msg_ok "Downloaded ${APP}"
 
     msg_info "Deploying new WAR"
-    cp /tmp/lc_download/LibreClinica-web-*.war /opt/tomcat9/webapps/libreclinica.war
+    WAR_FILE=$(find /tmp/lc_download -maxdepth 1 -name "LibreClinica-web-*.war" | head -1)
+    [[ -z "$WAR_FILE" ]] && { msg_error "WAR file not found after download"; exit 1; }
+    cp "$WAR_FILE" /opt/tomcat9/webapps/libreclinica.war
     chown tomcat:tomcat /opt/tomcat9/webapps/libreclinica.war
     rm -rf /tmp/lc_download
     msg_ok "Deployed new WAR"
