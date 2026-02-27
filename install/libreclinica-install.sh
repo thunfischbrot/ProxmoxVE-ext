@@ -124,6 +124,21 @@ collectStats=false
 display.manual=false
 
 2fa.activated=false
+
+ldap.enabled=false
+ldap.host=ldap://localhost:389
+ldap.userDn=
+ldap.password=
+ldap.loginQuery=(sAMAccountName={0})
+ldap.passwordRecoveryURL=
+ldap.userSearch.baseDn=
+ldap.userSearch.query=
+ldap.userData.distinguishedName=distinguishedName
+ldap.userData.username=sAMAccountName
+ldap.userData.firstName=givenName
+ldap.userData.lastName=sn
+ldap.userData.email=mail
+ldap.userData.organization=company
 EOF
 
 chown tomcat:tomcat /opt/tomcat9/libreclinica.config/datainfo.properties
